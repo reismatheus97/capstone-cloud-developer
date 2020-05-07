@@ -72,7 +72,7 @@ export class TodueAccess {
       ExpressionAttributeValues: {
         ':name': updatedTodue.name,
         ':dueDate': updatedTodue.dueDate,
-        ':done': updatedTodue.done
+        ':done': updatedTodue.done || false
       },
       ExpressionAttributeNames: {
         '#x': 'name'
