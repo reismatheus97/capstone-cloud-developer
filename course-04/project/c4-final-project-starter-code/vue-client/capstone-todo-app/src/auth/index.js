@@ -77,8 +77,11 @@ export const useAuth0 = ({
         return this.auth0Client.getTokenWithPopup(o);
       },
       /** Logs the user out and removes their session on the authorization server */
-      logout(o) {
-        return this.auth0Client.logout(o);
+      logout() {
+        return this.auth0Client.logout({
+          returnTo: 'http://localhost:8080',
+          client_id: '4xCu056NL1Mb16QGoUS5AzT0xl6s63DK'
+        });
       }
     },
     /** Use this lifecycle method to instantiate the SDK client */
@@ -88,8 +91,7 @@ export const useAuth0 = ({
         domain: options.domain,
         client_id: options.clientId,
         audience: "https://reis-matheus.auth0.com/api/v2/",
-        redirect_uri: redirectUri,
-        grant_type:"client_credentials"
+        redirect_uri: redirectUri
       });
 
       console.log('CREATED >>', this.auth0Client)
