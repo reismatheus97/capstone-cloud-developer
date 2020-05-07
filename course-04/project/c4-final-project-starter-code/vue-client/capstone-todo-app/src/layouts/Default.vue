@@ -37,9 +37,7 @@ export default {
       console.log('loginData >>', loginData)
     },
     logout () {
-      this.$auth.logout({
-        returnTo: window.location.origin
-      });
+      this.$auth.logout();
     }
   }
 }
