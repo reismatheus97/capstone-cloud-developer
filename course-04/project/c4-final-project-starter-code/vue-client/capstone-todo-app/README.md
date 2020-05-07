@@ -1,4 +1,9 @@
-# capstone-todo-app
+# capstone-toduetify-app
+
+## Running inside container
+```
+docker run -p 8080:8080 reismatheus97/capstone-toduetify
+```
 
 ## Project setup
 ```
