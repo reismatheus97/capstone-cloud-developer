@@ -94,8 +94,6 @@ export const useAuth0 = ({
         redirect_uri: redirectUri
       });
 
-      console.log('CREATED >>', this.auth0Client)
-
       try {
         // If the user is returning to the app after authentication..
         if (

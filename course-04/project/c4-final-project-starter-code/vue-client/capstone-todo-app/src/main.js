@@ -15,7 +15,6 @@ Vue.use(Auth0Plugin, {
   domain,
   clientId,
   onRedirectCallback: async appState => {
-    console.log('appState >>', appState)
     await store.dispatch('setToken')
     await store.dispatch('listTodues')
     router.push(

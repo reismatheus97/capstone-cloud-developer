@@ -17,7 +17,6 @@ const state = {
 
 const actions = {
   async createTodue ({ state, commit, dispatch }, todue) {
-    console.log('authService >>', authService())
     let userToken = state.token
     try {
       commit('SET_LOADING', true)
@@ -33,7 +32,6 @@ const actions = {
     }
   },
   async listTodues ({ state, commit }) {
-    console.log('authService >>', authService())
     let userToken = state.token
     let items = []
     try {
@@ -52,7 +50,6 @@ const actions = {
     let userToken = state.token
     try {
       commit('SET_LOADING', true)
-      console.log('checkTodue >>', todue)
       await repository.patchTodue(userToken, todue)
     } catch (error) {
       console.log(error)
@@ -75,13 +72,11 @@ const actions = {
   },
   async updateTodue ({ state, commit, dispatch }, todue) {
     let userToken = state.token
-    console.log('update todue >>', todue)
     try {
       commit('SET_LOADING', true)
       let file = todue.file
 
       if (file) {
-        console.log('file >>', file)
         // Add image to S3 and trigger notification lambda that uploads DyDB
         let uploadUrl = await repository.getUploadUrl(userToken, todue.todueId)
         await repository.uploadFile(uploadUrl, file)

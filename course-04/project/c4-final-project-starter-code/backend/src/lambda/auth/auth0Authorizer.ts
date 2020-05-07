@@ -12,7 +12,6 @@ export const handler = async (
 ): Promise<CustomAuthorizerResult> => {
   logger.info('Authorizing a user', event.authorizationToken)
   try {
-    console.log('tok >>', event.authorizationToken)
     console.log('event >>', event)
     const user = await checkAuth(event)
     console.log('result >>', user)

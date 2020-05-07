@@ -23,9 +23,6 @@
 
 <script>
 export default {
-  created () {
-    console.log('Auth >>', this.$auth)
-  },
   computed: {
     loading () {
       return this.$store.state.loading
@@ -33,8 +30,7 @@ export default {
   },
   methods: {
     login () {
-      let loginData = this.$auth.loginWithRedirect();
-      console.log('loginData >>', loginData)
+      this.$auth.loginWithRedirect();
     },
     logout () {
       this.$auth.logout();

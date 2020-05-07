@@ -200,7 +200,6 @@ export default {
       if (this.form && this.form.createdAt) {
         action = 'updateTodue'
         payload = { ...this.form, file: this.file }
-        console.log('update payload >>', payload)
       }
       await this.$store.dispatch(action, payload)
 
@@ -240,7 +239,6 @@ export default {
   },
    watch: {
      'form.attachmentUrl' () {
-       console.log("watching >>", this.form)
        if (this.form && this.form.attachmentUrl) {
          this.fileUrl = this.form.attachmentUrl
        }
