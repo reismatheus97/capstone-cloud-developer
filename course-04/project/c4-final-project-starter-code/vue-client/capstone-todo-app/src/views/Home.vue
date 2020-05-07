@@ -63,7 +63,20 @@
           <template v-else>
             <v-list-item v-for="(item, idx) in todues" :key="idx">
               <v-list-item-avatar>
-                <v-img v-if="item.attachmentUrl" :src="item.attachmentUrl"></v-img>
+                <v-img
+                  v-if="item.attachmentUrl"
+                  :src="item.attachmentUrl + `?${Date.now()}`"
+                >
+                  <template v-slot:placeholder>
+                    <v-row
+                      class="fill-height ma-0"
+                      align="center"
+                      justify="center"
+                    >
+                      <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+                    </v-row>
+                  </template>
+                </v-img>
                 <v-icon v-else class="white primary--text">mdi-image-off</v-icon>
               </v-list-item-avatar>
               <v-checkbox v-model="item.done" @click="handleCheck(item)" dark readonly></v-checkbox>
@@ -95,7 +108,7 @@
               <v-file-input v-model="file" accept="image/*" label="Add or update an image">
               </v-file-input>
               <div v-if="fileUrl" class="mx-0 mt-4 mb-6">
-                <v-img :src="fileUrl" height="100%" max-height="200" max-width="200"
+                <v-img :src="fileUrl + `?${Date.now()}`" height="100%" max-height="200" max-width="200"
                   :lazy-src="require('../assets/logo.svg')"
                   transition="fade-transition"
                 >
@@ -103,7 +116,12 @@
               </div>
             </template>
           </v-form>
-          <v-btn class="primary" :disabled="!valid" @click="saveTodue">Save</v-btn>
+          <v-btn
+            class="primary"
+            :disabled="!valid"
+            @click="saveTodue"
+            :loading="loading"
+          >Save</v-btn>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -177,6 +195,8 @@ export default {
     async saveTodue () {
       let action = 'createTodue'
       let payload = this.form
+      this.loading = true
+
       if (this.form && this.form.createdAt) {
         action = 'updateTodue'
         payload = { ...this.form, file: this.file }
@@ -184,10 +204,10 @@ export default {
       }
       await this.$store.dispatch(action, payload)
 
+      this.loading = false
       this.editing = false
       this.dialog = false
-      this.file = null
-      this.fileUrl = null
+      this.resetFileState()
       return
     },
     resetFileState () {
