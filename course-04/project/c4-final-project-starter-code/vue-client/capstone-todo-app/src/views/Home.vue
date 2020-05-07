@@ -1,6 +1,28 @@
 <template>
   <v-layout justify-center mt-4>
+    <!-- Card Login -->
     <v-card
+      v-if="!hasToken"
+      dark
+      elevation="0"
+      width="90%"
+      class="primary lighten-1"
+    >
+      <v-card-title>
+        Welcome to <b class="mx-1 headline">Toduetify</b>
+      </v-card-title>
+      <v-card-subtitle>
+        Login so we can start the party!
+      </v-card-subtitle>
+      <v-card-text>
+        <v-btn class="white primary--text" @click="$auth.loginWithRedirect()">Log in</v-btn>
+      </v-card-text>
+    </v-card>
+    <!-- end Card Login -->
+
+    <!-- Card List -->
+    <v-card
+      v-else
       dark
       elevation="0"
       width="90%"
@@ -58,7 +80,9 @@
         </div>
       </v-skeleton-loader>
     </v-card>
+    <!-- end Card List -->
 
+    <!-- Dialog -->
     <v-dialog v-model="dialog" @click:outside="resetFileState">
       <v-card>
         <v-card-title>
@@ -83,6 +107,7 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <!-- end Dialog -->
   </v-layout>
 </template>
 
