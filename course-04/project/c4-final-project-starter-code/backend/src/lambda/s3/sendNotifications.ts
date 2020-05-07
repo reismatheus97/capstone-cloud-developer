@@ -5,7 +5,7 @@ import 'source-map-support/register'
 
 const AWS = AWSXRay.captureAWS(AWS_SDK)
 const docClient = new AWS.DynamoDB.DocumentClient()
-const todosTable = process.env.TODOS_TABLE
+const toduesTable = process.env.TODUES_TABLE
 const bucketName = process.env.IMAGES_S3_BUCKET
 
 export const handler: S3Handler = async (event: S3Event) => {
@@ -14,13 +14,13 @@ export const handler: S3Handler = async (event: S3Event) => {
     let attachmentUrl = `https://${bucketName}.s3.amazonaws.com/${key}`
 
     let userId = key.split("___")[0]
-    let todoId = key.split("___")[1]
+    let todueId = key.split("___")[1]
     userId = decodeURIComponent(userId)
     let params = {
-      TableName: todosTable,
+      TableName: toduesTable,
       Key: {
         "userId": userId,
-        "todoId": todoId
+        "todueId": todueId
       },
       UpdateExpression: "set attachmentUrl = :attachmentUrl",
       ExpressionAttributeValues: {

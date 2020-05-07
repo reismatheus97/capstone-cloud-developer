@@ -1,7 +1,7 @@
 import 'source-map-support/register'
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
 
-import { getTodo } from '../../businessLogic/todos'
+import { getTodue } from '../../businessLogic/todues'
 
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -10,14 +10,14 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   const authorization = event.headers.Authorization
   const split = authorization.split(' ')
   const jwtToken = split[1]
-  const todoId = event.pathParameters.todoId
-  let todo, statusCode;
+  const todueId = event.pathParameters.todueId
+  let todue, statusCode;
 
   try {
-    todo = await getTodo(jwtToken, todoId)
+    todue = await getTodue(jwtToken, todueId)
     statusCode = 200
   } catch (error) {
-    todo = error.message
+    todue = error.message
     statusCode = 404
   }
 
@@ -27,7 +27,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       'Access-Control-Allow-Origin': '*'
     },
     body: JSON.stringify({
-      item: todo
+      item: todue
     })
   }
 }

@@ -1,6 +1,7 @@
+app: capstone-todue-app
 org: reismatheus97
 service:
-  name: sls-capstone-app
+  name: sls-capstone
 
 plugins:
   - serverless-webpack
@@ -18,10 +19,13 @@ provider:
   region: ${opt:region, 'us-east-1'}
 
   environment:
-    TODOS_TABLE: TODOs-dev
+    TODUES_TABLE: Todues-dev
     IMAGES_S3_BUCKET: reismatheus97-udacity-serverless-dev
     SIGNED_URL_EXPIRATION: 300
-    AUTH_0_SECRET: VSKBc3M6_GKlEAs_t0x0BU0VLCPuDgD6nRCYyx2lwz1dqwhm_-dbqY8dvlmfe5-k
+    AUTH_0_SECRET: pW1zfGrQU4JSYQ6rVp-oRBXY4kcF2o-KNK4dtKhgZdj1OouVVvspOO_V9zA9Cz1_
+    AUTH_0_DOMAIN: https://reis-matheus.auth0.com
+    AUTH_0_AUDIENCE: https://reis-matheus.auth0.com/api/v2/
+    AUTH_0_ISSUER: https://reis-matheus.auth0.com
 
   tracing:
     lambda: true
@@ -63,38 +67,38 @@ custom:
     api:
       info:
         version: v0.0.1
-        title: TODOs API
-        description: Serverless application for TODOs
+        title: Todues API
+        description: Serverless application for Todues
     models:
-      - name: TodoCreateRequest
+      - name: TodueCreateRequest
         contentType: application/json
-        schema: ${file(src/models/json-schema/create-todo-request.json)}
-      - name: TodoUpdateRequest
+        schema: ${file(src/models/json-schema/create-todue-request.json)}
+      - name: TodueUpdateRequest
         contentType: application/json
-        schema: ${file(src/models/json-schema/update-todo-request.json)}
+        schema: ${file(src/models/json-schema/update-todue-request.json)}
 
 functions:
   Auth:
     handler: src/lambda/auth/auth0Authorizer.handler
 
-  # TODO: Configure this function
-  GetTodos:
-    handler: src/lambda/http/getTodos.handler
+  # TODUE: Configure this function
+  GetTodues:
+    handler: src/lambda/http/getTodues.handler
     events:
       - http:
           method: get
-          path: todos
+          path: todues
           cors: true
           authorizer: Auth
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODUES_TABLE}
       - Effect: Allow
         Action:
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODUES_TABLE}
       - Effect: "Allow"
         Action:
           - "xray:PutTraceSegments"
@@ -102,24 +106,24 @@ functions:
         Resource:
           - "*"
 
-  # TODO: Configure this function
-  GetTodo:
-    handler: src/lambda/http/getTodo.handler
+  # TODUE: Configure this function
+  GetTodue:
+    handler: src/lambda/http/getTodue.handler
     events:
       - http:
           method: get
-          path: todos/{todoId}
+          path: todues/{todueId}
           cors: true
           authorizer: Auth
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODUES_TABLE}
       - Effect: Allow
         Action:
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODUES_TABLE}
       - Effect: "Allow"
         Action:
           - "xray:PutTraceSegments"
@@ -127,30 +131,30 @@ functions:
         Resource:
           - "*"
 
-  # TODO: Configure this function
-  CreateTodo:
-    handler: src/lambda/http/createTodo.handler
+  # TODUE: Configure this function
+  CreateTodue:
+    handler: src/lambda/http/createTodue.handler
     events:
       - http:
           method: post
-          path: todos
+          path: todues
           cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
           documentation:
-            summary: Create a new TODO
-            description: Create a new TODO
+            summary: Create a new Todue
+            description: Create a new Todue
             requestModels:
-              'application/json': TodoCreateRequest
+              'application/json': TodueCreateRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODUES_TABLE}
       - Effect: Allow
         Action:
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODUES_TABLE}
       - Effect: "Allow"
         Action:
           - "xray:PutTraceSegments"
@@ -159,30 +163,30 @@ functions:
           - "*"
 
 
-  # # TODO: Configure this function
-  UpdateTodo:
-    handler: src/lambda/http/updateTodo.handler
+  # # TODUE: Configure this function
+  UpdateTodue:
+    handler: src/lambda/http/updateTodue.handler
     events:
       - http:
           method: patch
-          path: todos/{todoId}
+          path: todues/{todueId}
           cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
           documentation:
-            summary: Create a new TODO
-            description: Create a new TODO
+            summary: Update a new Todue
+            description: Update a new Todue
             requestModels:
-              'application/json': TodoUpdateRequest
+              'application/json': TodueUpdateRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODUES_TABLE}
       - Effect: Allow
         Action:
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODUES_TABLE}
       - Effect: "Allow"
         Action:
           - "xray:PutTraceSegments"
@@ -190,13 +194,13 @@ functions:
         Resource:
           - "*"
 
-  # # TODO: Configure this function
-  DeleteTodo:
-    handler: src/lambda/http/deleteTodo.handler
+  # # TODUE: Configure this function
+  DeleteTodue:
+    handler: src/lambda/http/deleteTodue.handler
     events:
       - http:
           method: delete
-          path: todos/{todoId}
+          path: todues/{todueId}
           cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
@@ -204,11 +208,11 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODUES_TABLE}
       - Effect: Allow
         Action:
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODUES_TABLE}
       - Effect: "Allow"
         Action:
           - "xray:PutTraceSegments"
@@ -216,13 +220,13 @@ functions:
         Resource:
           - "*"
 
-  # # TODO: Configure this function
+  # # TODUE: Configure this function
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler
     events:
       - http:
           method: post
-          path: todos/{todoId}/attachment
+          path: todues/{todueId}/attachment
           cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
@@ -253,7 +257,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODUES_TABLE}
       - Effect: "Allow"
         Action:
           - "xray:PutTraceSegments"
@@ -274,21 +278,21 @@ resources:
         RestApiId:
           Ref: ApiGatewayRestApi
 
-    TodosDynamoDBTable:
+    ToduesDynamoDBTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
           - AttributeName: userId
             AttributeType: S
-          - AttributeName: todoId
+          - AttributeName: todueId
             AttributeType: S
         KeySchema:
           - AttributeName: userId
             KeyType: HASH
-          - AttributeName: todoId
+          - AttributeName: todueId
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
-        TableName: ${self:provider.environment.TODOS_TABLE}
+        TableName: ${self:provider.environment.TODUES_TABLE}
 
     RequestBodyValidator:
       Type: AWS::ApiGateway::RequestValidator

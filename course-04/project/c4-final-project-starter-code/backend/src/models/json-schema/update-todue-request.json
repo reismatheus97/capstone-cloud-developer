@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "todo",
+  "title": "todue",
   "type": "object",
   "properties": {
     "name": {
@@ -13,5 +13,5 @@
       "type": "boolean"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": true
 }

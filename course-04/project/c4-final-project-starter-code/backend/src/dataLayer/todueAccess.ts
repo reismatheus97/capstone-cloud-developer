@@ -1,14 +1,14 @@
 import * as AWS_SDK from 'aws-sdk'
 import * as AWSXRay from 'aws-xray-sdk'
-
-import { TodoItem } from '../models/TodoItem'
+import * as moment from 'moment'
+import { TodueItem } from '../models/TodueItem'
 
 const AWS = AWSXRay.captureAWS(AWS_SDK)
 
-export class TodoAccess {
+export class TodueAccess {
   constructor (
     private readonly docClient = new AWS.DynamoDB.DocumentClient(),
-    private readonly todosTable = process.env.TODOS_TABLE,
+    private readonly toduesTable = process.env.TODUES_TABLE,
     private readonly s3Client = new AWS.S3({
       signatureVersion: 'v4'
     }),
@@ -16,11 +16,11 @@ export class TodoAccess {
     private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION
   ) {}
 
-  async getTodosPerUser (userId: string): Promise<TodoItem[]> {
-    console.log('Getting all TODOs')
+  async getToduesPerUser (userId: string): Promise<TodueItem[]> {
+    console.log('Getting all Todues')
 
     const result = await this.docClient.query({
-      TableName: this.todosTable,
+      TableName: this.toduesTable,
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId
@@ -31,15 +31,15 @@ export class TodoAccess {
     return result.Items
   }
 
-  async getTodo (userId: string, todoId: string): Promise<TodoItem[]> {
-    console.log('Getting user TODOs')
+  async getTodue (userId: string, todueId: string): Promise<TodueItem[]> {
+    console.log('Getting user Todues')
 
     const result = await this.docClient.query({
-      TableName: this.todosTable,
-      KeyConditionExpression: 'userId = :userId AND todoId = :todoId',
+      TableName: this.toduesTable,
+      KeyConditionExpression: 'userId = :userId AND todueId = :todueId',
       ExpressionAttributeValues: {
         ':userId': userId,
-        ':todoId': todoId
+        ':todueId': todueId
       },
       ScanIndexForward: false
     }).promise()
@@ -47,29 +47,32 @@ export class TodoAccess {
     return result.Items
   }
 
-  async createTodo (todo: TodoItem): Promise<TodoItem> {
-    console.log(`Creating a TODO with id ${todo.todoId}`)
+  async createTodue (todue: TodueItem): Promise<TodueItem> {
+    console.log(`Creating a Todue with id ${todue.todueId}`)
 
     await this.docClient.put({
-      TableName: this.todosTable,
-      Item: todo
+      TableName: this.toduesTable,
+      Item: {
+        ...todue,
+        createdAt: moment().format("YYYY-MM-DD HH:mm:ss")
+      }
     }).promise()
 
-    return todo
+    return todue
   }
 
-  async updateTodo (userId: string, updatedTodo: any): Promise<any> {
+  async updateTodue (userId: string, updatedTodue: any): Promise<any> {
     let params = {
-      TableName: this.todosTable,
+      TableName: this.toduesTable,
       Key: {
         "userId": userId,
-        "todoId": updatedTodo.todoId
+        "todueId": updatedTodue.todueId
       },
       UpdateExpression: "set #x = :name, dueDate = :dueDate, done = :done",
       ExpressionAttributeValues: {
-        ':name': updatedTodo.name,
-        ':dueDate': updatedTodo.dueDate,
-        ':done': updatedTodo.done
+        ':name': updatedTodue.name,
+        ':dueDate': updatedTodue.dueDate,
+        ':done': updatedTodue.done
       },
       ExpressionAttributeNames: {
         '#x': 'name'
@@ -79,23 +82,23 @@ export class TodoAccess {
     await this.docClient.update(params).promise()
   }
 
-  async deleteTodo (userId: string, todoId: string): Promise<any> {
+  async deleteTodue (userId: string, todueId: string): Promise<any> {
     await this.docClient.delete({
-      TableName: this.todosTable,
+      TableName: this.toduesTable,
       Key: {
         "userId": userId,
-        "todoId": todoId
+        "todueId": todueId
       }
     }).promise()
     return true
   }
 
 
-  async getUploadUrl (todoId: string = '', userId: string): Promise<string> {
+  async getUploadUrl (todueId: string = '', userId: string): Promise<string> {
     let encodedUserId = encodeURIComponent(userId)
     return this.s3Client.getSignedUrl('putObject', {
       Bucket: this.bucketName,
-      Key: todoId + '___' + encodedUserId,
+      Key: todueId + '___' + encodedUserId,
       Expires: this.urlExpiration
     })
   }
